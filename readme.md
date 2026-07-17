@@ -34,19 +34,22 @@ Para rodar os testes, basta executar o comando abaixo no terminal:
 
 ```bash
 pytest
+```
 🛠️ Como Executar o Projeto Localmente
 Clone o repositório:
 
-Bash
+```
 git clone [https://github.com/igorrzao/banco-mvc-fastapi.git](https://github.com/igorrzao/banco-mvc-fastapi.git)
 cd banco-mvc-fastapi
+```
 Instale as dependências (FastAPI, Uvicorn, Pytest, HTTPX):
 
-Bash
+```
 pip install fastapi uvicorn pytest httpx
+```
 Inicie o servidor de desenvolvimento:
-
-Bash
+```
 uvicorn main:app --reload
+```
 Acesse a documentação interativa (Swagger):
 Abra o seu navegador e acesse: http://127.0.0.1:8000/docs
