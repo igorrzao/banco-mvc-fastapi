@@ -1,0 +1,88 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+body {
+    background-color: #f4f7f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 100vh;
+}
+
+
+.container {
+    width: 100%;
+    max-width: 100%;
+    padding: 20px;
+}
+
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+
+.card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+}
+
+
+.saldo-card {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0 15px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+
+.botoes {
+    display: flex;
+    gap: 10px;
+}
+
+
+.btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+
+.btn-deposito { background-color: #2e7d32; }
+.btn-saque { background-color: #c62828; }
+
+.mensagem {
+    margin-top: 10px;
+    text-align: center;
+    font-weight: bold;
+}
