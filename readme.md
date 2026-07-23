@@ -1,8 +1,8 @@
-# 🏦 API de Sistema Bancário - Padrão MVC
+#  API de Sistema Bancário - Padrão MVC
 
 Esta é uma API robusta que simula as operações essenciais de um sistema bancário, desenvolvida com foco em segurança de transações, arquitetura limpa e testes automatizados.
 
-## 🚀 Tecnologias Utilizadas
+##  Tecnologias Utilizadas
 
 * **Python 3** - Linguagem base do projeto.
 * **FastAPI** - Framework web moderno, rápido (alta performance) e de fácil utilização.
@@ -12,7 +12,7 @@ Esta é uma API robusta que simula as operações essenciais de um sistema banc�
 
 ---
 
-## 🏛️ Arquitetura do Projeto (MVC)
+##  Arquitetura do Projeto (MVC)
 
 O projeto foi estruturado seguindo o padrão de arquitetura **MVC (Model-View-Controller)** para garantir a separação de responsabilidades, facilidade de manutenção e segurança:
 
@@ -23,7 +23,7 @@ O projeto foi estruturado seguindo o padrão de arquitetura **MVC (Model-View-Co
 
 ---
 
-## 🧪 Testes Automatizados
+##  Testes Automatizados
 
 O projeto conta com testes de integração e unitários que validam cenários críticos do sistema:
 * Tentativa de saque com saldo insuficiente (Garante o bloqueio e retorno de erro).
@@ -35,7 +35,7 @@ Para rodar os testes, basta executar o comando abaixo no terminal:
 ```bash
 pytest
 ```
-🛠️ Como Executar o Projeto Localmente
+ Como Executar o Projeto Localmente
 
 Clone o repositório:
 
