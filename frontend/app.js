@@ -2,15 +2,6 @@ const urlAPI = "http://127.0.0.1:8000";
 let usuarioLogado = "";
 
 async function buscarSaldo() {
-    const nomeDigitado = document.getElementById("input-usuario").value;
-
-    if (nomeDigitado === "") {
-        alert("Digite o nome de usuário")
-        return;
-    }
-
-    usuarioLogado = nomeDigitado;
-
     try {
         const resposta = await fetch(`${urlAPI}/saldo/${usuarioLogado}`);
         const dados = await resposta.json();
@@ -30,7 +21,7 @@ async function buscarSaldo() {
     }
 }
 
-document.getElementById("btn-acessar").addEventListener("click", buscarSaldo);
+
 
 
 
@@ -113,3 +104,49 @@ async function realizarSaque() {
 }
 
 document.getElementById("btn-sacar").addEventListener("click", realizarSaque);
+
+
+
+
+
+
+
+
+
+
+
+async function fazerLogin() {
+
+    const usuarioDigitado = document.getElementById("input-usuario").value;
+    const senhaDigitada = document.getElementById("input-senha").value;
+
+    if (!usuarioDigitado || !senhaDigitada) {
+        alert("Preencha com um usuário e senha.");
+        return;
+    }
+
+    try {
+        const resposta = await fetch(`${urlAPI}/login`, {
+        method: "POST", headers: { "Content-Type": "application/json"},
+        body:JSON.stringify({
+            usuario: usuarioDigitado,
+            senha: senhaDigitada
+            })
+        });
+    
+        const resultado = await resposta.json();
+
+        if (resultado.status === "sucesso") {
+            usuarioLogado = usuarioDigitado;
+            alert("Login realizado com sucesso.");
+            buscarSaldo();
+        } else {
+            alert(resultado.motivo || "Usuário ou senha incorretos.");
+        }
+    } catch (erro) {
+        console.error("Erro no login:", erro);
+            alert("Erro ao conectar ao servidor.");
+    }
+}    
+
+document.getElementById("btn-acessar").addEventListener("click", fazerLogin);

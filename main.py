@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import inicializar_banco
 from repository import verificar_credenciais, atualizar_saldo, buscar_saldo
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -14,6 +15,10 @@ app.add_middleware(
 )
 
 inicializar_banco()
+
+class LoginData(BaseModel):
+    usuario: str
+    senha: str
 
 
 
@@ -125,3 +130,19 @@ def transferir(nome_usuario:str, senha:str, valor:float, usuario_alvo:str):
     
     else:
         return{"status":"erro", "motivo":"Saldo insuficiente."}
+
+
+
+
+@app.post("/login")
+def realizarLogin(dados: LoginData):
+    usuarioDigitado = dados.usuario
+    senhaDigitada = dados.senha
+ 
+    resposta = verificar_credenciais(usuarioDigitado, senhaDigitada)
+
+    if resposta["status"] == "erro":
+        return resposta
+
+    
+    return{"status":"sucesso", "mensagem":"Login realizado com sucesso!"}
