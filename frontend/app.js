@@ -1,5 +1,46 @@
 const urlAPI = "http://127.0.0.1:8000";
 let usuarioLogado = "";
+let token = "";
+
+
+
+async function fazerLogin() {
+
+    const usuarioDigitado = document.getElementById("input-usuario").value;
+    const senhaDigitada = document.getElementById("input-senha").value;
+
+    if (!usuarioDigitado || !senhaDigitada) {
+        alert("Preencha com um usuário e senha.");
+        return;
+    }
+
+    try {
+        const resposta = await fetch(`${urlAPI}/login`, {
+        method: "POST", headers: { "Content-Type": "application/json"},
+        body:JSON.stringify({
+            usuario: usuarioDigitado,
+            senha: senhaDigitada
+            })
+        });
+    
+        const resultado = await resposta.json();
+
+        if (resultado.status === "sucesso") {
+            usuarioLogado = usuarioDigitado;
+            alert("Login realizado com sucesso.");
+            buscarSaldo();
+        } else {
+            alert(resultado.motivo || "Usuário ou senha incorretos.");
+        }
+    } catch (erro) {
+        console.error("Erro no login:", erro);
+            alert("Erro ao conectar ao servidor.");
+    }
+}    
+
+document.getElementById("btn-acessar").addEventListener("click", fazerLogin);
+
+
 
 async function buscarSaldo() {
     try {
@@ -35,7 +76,7 @@ async function realizarDeposito() {
     }
     
     if (!usuarioLogado) {
-        alert("Identifique-se primeiro digitando seu nome de usuário.");
+        alert("Identifique-se primeiro realizando login.");
         return;
     }
 
@@ -115,38 +156,3 @@ document.getElementById("btn-sacar").addEventListener("click", realizarSaque);
 
 
 
-async function fazerLogin() {
-
-    const usuarioDigitado = document.getElementById("input-usuario").value;
-    const senhaDigitada = document.getElementById("input-senha").value;
-
-    if (!usuarioDigitado || !senhaDigitada) {
-        alert("Preencha com um usuário e senha.");
-        return;
-    }
-
-    try {
-        const resposta = await fetch(`${urlAPI}/login`, {
-        method: "POST", headers: { "Content-Type": "application/json"},
-        body:JSON.stringify({
-            usuario: usuarioDigitado,
-            senha: senhaDigitada
-            })
-        });
-    
-        const resultado = await resposta.json();
-
-        if (resultado.status === "sucesso") {
-            usuarioLogado = usuarioDigitado;
-            alert("Login realizado com sucesso.");
-            buscarSaldo();
-        } else {
-            alert(resultado.motivo || "Usuário ou senha incorretos.");
-        }
-    } catch (erro) {
-        console.error("Erro no login:", erro);
-            alert("Erro ao conectar ao servidor.");
-    }
-}    
-
-document.getElementById("btn-acessar").addEventListener("click", fazerLogin);
