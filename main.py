@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import inicializar_banco
 from repository import verificar_credenciais, atualizar_saldo, buscar_saldo
+from auth.auth import criar_token
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -145,4 +146,9 @@ def realizarLogin(dados: LoginData):
         return resposta
 
     
-    return{"status":"sucesso", "mensagem":"Login realizado com sucesso!"}
+    token = criar_token(usuarioDigitado)
+
+    return {
+        "status":"sucesso",
+        "token":token
+    }
