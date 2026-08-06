@@ -16,3 +16,22 @@ def criar_token(nomeUsuario:str):
         algorithm="HS256")
 
     return token
+
+
+
+def validar_token(token):
+
+    try: 
+        decode = jwt.decode(token, SECRET_KEY, algorithms="HS256")
+
+    except jwt.exceptions.ExpiredSignatureError:
+        return {"status":"erro", "motivo":"Token expirado."}
+    
+    except jwt.exceptions.InvalidTokenError:
+        return {"status":"erro", "motivo":"Token inválido."}
+
+    usuario = decode["sub"]
+
+    return {"status":"sucesso", "sub":usuario}
+
+    
