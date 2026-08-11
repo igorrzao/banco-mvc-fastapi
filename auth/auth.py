@@ -1,8 +1,10 @@
 import jwt
 from datetime import datetime, timedelta, timezone
 from config import SECRET_KEY, TOKEN_EXPIRE_MINUTES
+from fastapi import Depends, FastAPI
+from fastapi.security import OAuth2PasswordBearer
 
-
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 def criar_token(nomeUsuario:str):
         
@@ -35,3 +37,6 @@ def validar_token(token):
     return {"status":"sucesso", "sub":usuario}
 
     
+
+def extrair_token(token: str = Depends(oauth2_scheme)):
+    return token

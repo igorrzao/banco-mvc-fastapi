@@ -4,6 +4,8 @@ let token = "";
 
 
 
+
+
 async function fazerLogin() {
 
     const usuarioDigitado = document.getElementById("input-usuario").value;
@@ -44,7 +46,7 @@ document.getElementById("btn-acessar").addEventListener("click", fazerLogin);
 
 async function buscarSaldo() {
     try {
-        const resposta = await fetch(`${urlAPI}/saldo/${usuarioLogado}`);
+        const resposta = await fetch(`${urlAPI}/saldo`);
         const dados = await resposta.json();
         const elementoSaldo = document.getElementById("saldo");
     

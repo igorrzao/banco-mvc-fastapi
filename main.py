@@ -1,8 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from database import inicializar_banco
 from repository import verificar_credenciais, atualizar_saldo, buscar_saldo
-from auth.auth import criar_token
+from auth.auth import criar_token, validar_token, extrair_token, oauth2_scheme
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -23,14 +23,26 @@ class LoginData(BaseModel):
 
 
 
-@app.get("/saldo/{nome_usuario}")
-def verificar_saldo(nome_usuario:str):
-    resposta = buscar_saldo(nome_usuario)
+@app.get("/saldo")
+def verificar_saldo(token: str = Depends(oauth2_scheme)):
+
+    resposta = validar_token(token)
 
     if resposta["status"] == "erro":
         return resposta
+
+    usuario = resposta["sub"]
+
+    resposta = buscar_saldo(usuario)
+
+    if "status" in resposta and resposta["status"] == "erro":
+        return resposta
     
-    return resposta
+    return {
+            "status": "sucesso",
+            "saldo_atual": resposta["saldo"]
+            }
+
     
 
 @app.post("/deposito/{nome_usuario}/{valor}")

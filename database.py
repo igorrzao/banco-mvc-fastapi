@@ -1,6 +1,6 @@
 import sqlite3
 
-conexao = sqlite3.connect("meu_banco.db", check_same_thread=False)
+conexao = sqlite3.connect("/app/data/meu_banco.db", check_same_thread=False)
 cursor = conexao.cursor()
 
 def inicializar_banco():

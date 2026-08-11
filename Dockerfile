@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . /app
 
-RUN pip install --no-cache-dir fastapi uvicorn pytest httpx
+RUN pip install --no-cache-dir fastapi uvicorn pytest httpx pyjwt python-dotenv
 
 EXPOSE 8000
 

@@ -5,10 +5,10 @@ def buscar_saldo(nome_usuario:str):
     cursor.execute("SELECT saldo FROM contas WHERE titular = ?", (nome_usuario,))
     resultado = cursor.fetchone()
     
-    if resultado == None:
+    if resultado is None:
         return {"status":"erro", "motivo": "Usuário não encontrado"}
     
-    return {"status": "sucesso", "titular": nome_usuario, "saldo": resultado[0]}
+    return {"saldo": resultado[0]}
 
 
 
@@ -16,7 +16,7 @@ def verificar_credenciais(nome_usuario: str, senha_digitada: str):
     cursor.execute("SELECT saldo, senha FROM contas WHERE titular = ?", (nome_usuario,))
     resultado = cursor.fetchone()
     
-    if resultado == None:
+    if resultado is None:
         return{"status":"erro", "motivo":"Usuário não encontrado."}
     
     saldo_banco = resultado[0]
