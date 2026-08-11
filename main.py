@@ -4,6 +4,7 @@ from database import inicializar_banco
 from repository import verificar_credenciais, atualizar_saldo, buscar_saldo
 from auth.auth import criar_token, validar_token, extrair_token, oauth2_scheme
 from pydantic import BaseModel
+from fastapi.security import OAuth2PasswordRequestForm
 
 app = FastAPI()
 
@@ -148,9 +149,10 @@ def transferir(nome_usuario:str, senha:str, valor:float, usuario_alvo:str):
 
 
 @app.post("/login")
-def realizarLogin(dados: LoginData):
-    usuarioDigitado = dados.usuario
-    senhaDigitada = dados.senha
+def realizarLogin(dadosLogin: OAuth2PasswordRequestForm = Depends(OAuth2PasswordRequestForm)):
+    
+    usuarioDigitado = dadosLogin.username
+    senhaDigitada = dadosLogin.password
  
     resposta = verificar_credenciais(usuarioDigitado, senhaDigitada)
 
@@ -162,5 +164,6 @@ def realizarLogin(dados: LoginData):
 
     return {
         "status":"sucesso",
-        "token":token
+        "access_token": token,
+        "token_type": "bearer"
     }
