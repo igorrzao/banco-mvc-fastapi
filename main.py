@@ -46,8 +46,8 @@ def verificar_saldo(token: str = Depends(oauth2_scheme)):
 
     
 
-@app.post("/deposito/{nome_usuario}/{valor}")
-def depositar(nome_usuario:str, valor:float):
+@app.post("/deposito/valor")
+def depositar(token:str, valor:float):
 
     if valor <= 0:
         return{"status":"erro", "motivo": "Valor inserido inválido para depósito."}

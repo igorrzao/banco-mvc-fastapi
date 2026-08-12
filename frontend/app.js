@@ -17,18 +17,21 @@ async function fazerLogin() {
     }
 
     try {
+
+        const dadosLogin = new URLSearchParams();
+
+        dadosLogin.append("username", usuarioDigitado);
+        dadosLogin.append("password", senhaDigitada);
+
         const resposta = await fetch(`${urlAPI}/login`, {
-        method: "POST", headers: { "Content-Type": "application/json"},
-        body:JSON.stringify({
-            usuario: usuarioDigitado,
-            senha: senhaDigitada
-            })
-        });
+            method: "POST",
+            body: dadosLogin
+            });
     
         const resultado = await resposta.json();
 
         if (resultado.status === "sucesso") {
-            usuarioLogado = usuarioDigitado;
+            token = resultado.access_token;
             alert("Login realizado com sucesso.");
             buscarSaldo();
         } else {
@@ -46,7 +49,11 @@ document.getElementById("btn-acessar").addEventListener("click", fazerLogin);
 
 async function buscarSaldo() {
     try {
-        const resposta = await fetch(`${urlAPI}/saldo`);
+        const resposta = await fetch(`${urlAPI}/saldo`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
         const dados = await resposta.json();
         const elementoSaldo = document.getElementById("saldo");
     
@@ -56,7 +63,7 @@ async function buscarSaldo() {
             return;
         }
     
-        elementoSaldo.innerText = `R$ ${dados.saldo.toFixed(2)}`;
+        elementoSaldo.innerText = `R$ ${dados.saldo_atual.toFixed(2)}`;
 
     } catch (erro) {
         console.error("Erro ao conectar com a API:", erro);
