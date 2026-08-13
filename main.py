@@ -18,9 +18,8 @@ app.add_middleware(
 
 inicializar_banco()
 
-class LoginData(BaseModel):
-    usuario: str
-    senha: str
+class ValorRecebido(BaseModel):
+    valor: float
 
 
 
@@ -46,30 +45,37 @@ def verificar_saldo(token: str = Depends(oauth2_scheme)):
 
     
 
-@app.post("/deposito/valor")
-def depositar(token:str, valor:float):
+@app.post("/deposito")
+def depositar(dados: ValorRecebido, token: str = Depends(oauth2_scheme)):
 
-    if valor <= 0:
-        return{"status":"erro", "motivo": "Valor inserido inválido para depósito."}
-
-
-    resposta = buscar_saldo(nome_usuario)
+    resposta = validar_token(token)
 
     if resposta["status"] == "erro":
-        return resposta
-    
-    saldo_atual = resposta["saldo"]
+            return resposta
 
-    novo_saldo = saldo_atual + valor
-    atualizar_saldo(nome_usuario, novo_saldo)
-    
+    valor_deposito = dados.valor
+
+    if valor_deposito <= 0:
+            return{"status":"erro", "motivo": "Valor inserido inválido para depósito."}
+
+    usuario = resposta["sub"]
+
+    saldo_atual = buscar_saldo(usuario)
+
+    if "status" in saldo_atual and saldo_atual["status"] == "erro":
+            return saldo_atual
+
+    novo_saldo = saldo_atual["saldo"] + valor_deposito
+
+    atualizar_saldo(usuario, novo_saldo)
+
     return {
-        "status": "sucesso",
-        "mensagem": "Depósito realizado com sucesso!",
-        "titular": nome_usuario,
-        "saldo_anterior": saldo_atual,
-        "novo_saldo": novo_saldo
-    }
+            "status": "sucesso",
+            "mensagem": "Depósito realizado com sucesso!",
+            "titular": usuario,
+            "saldo_anterior": saldo_atual["saldo"],
+            "novo_saldo": novo_saldo
+        }
 
 
 @app.post("/saque/{nome_usuario}/{senha}/{valor}")

@@ -79,19 +79,28 @@ async function realizarDeposito() {
     const inputValor = document.getElementById("valor");
     const valor = parseFloat(inputValor.value);
 
+    if (!token) {
+        alert("Identifique-se primeiro realizando login.");
+        return;
+    }
+    
     if (isNaN(valor) || valor <= 0) {
         alert("Digite um valor válido para depósito.");
         return;
     }
     
-    if (!usuarioLogado) {
-        alert("Identifique-se primeiro realizando login.");
-        return;
-    }
+    
 
     try {
-        const resposta = await fetch(`${urlAPI}/deposito/${usuarioLogado}/${valor}`, {
-            method: "POST"
+        const resposta = await fetch(`${urlAPI}/deposito`, {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            method: "POST",
+            body:  JSON.stringify({
+                valor: valor
+            })
         });
 
         const dados = await resposta.json();
