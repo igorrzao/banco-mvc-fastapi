@@ -128,21 +128,30 @@ document.getElementById("btn-depositar").addEventListener("click", realizarDepos
 async function realizarSaque() {
     const inputValor = document.getElementById("valor");
     const valor = parseFloat(inputValor.value);
-    const senhaDigitada = document.getElementById("input-senha").value;
+    
+
+    if (!token) {
+        alert("Identifique-se primeiro realizando login.")
+        return;
+    }
 
     if (isNaN(valor) || valor <= 0) {
         alert("Digite um valor válido para saque");
         return;
     }
 
-    if (!usuarioLogado) {
-        alert("Identifique-se primeiro digitando seu nome de usuário.");
-        return;
-    }
+
 
     try {
-        const resposta = await fetch(`${urlAPI}/saque/${usuarioLogado}/${senhaDigitada}/${valor}`, {
-            method: "POST"
+        const resposta = await fetch(`${urlAPI}/saque`, {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify({
+                valor: valor
+            })
         });
 
         const dados = await resposta.json();
@@ -153,7 +162,7 @@ async function realizarSaque() {
             inputValor.value = "";
             alert("Saque realizado com sucesso!");
         } else {
-            alert(dados.motivo || "Erro ao realizar saque.");
+            alert(dados.mensagem || "Erro ao realizar saque.");
         }
         
     } catch (erro) {

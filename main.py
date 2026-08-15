@@ -51,12 +51,12 @@ def depositar(dados: ValorRecebido, token: str = Depends(oauth2_scheme)):
     resposta = validar_token(token)
 
     if resposta["status"] == "erro":
-            return resposta
+        return resposta
 
     valor_deposito = dados.valor
 
     if valor_deposito <= 0:
-            return{"status":"erro", "motivo": "Valor inserido inválido para depósito."}
+            return{"status":"erro", "mensagem": "Valor inserido inválido para depósito."}
 
     usuario = resposta["sub"]
 
@@ -78,35 +78,40 @@ def depositar(dados: ValorRecebido, token: str = Depends(oauth2_scheme)):
         }
 
 
-@app.post("/saque/{nome_usuario}/{senha}/{valor}")
-def sacar(nome_usuario:str, senha:str, valor:float):
+@app.post("/saque")
+def sacar(dados: ValorRecebido, token: str = Depends(oauth2_scheme)):
 
-    if valor <= 0:
-        return{"status":"erro", "motivo": "O valor do saque deve ser maior que zero."}
-
-    resposta = verificar_credenciais(nome_usuario, senha)
+    resposta = validar_token(token)
 
     if resposta["status"] == "erro":
         return resposta
-    
-    saldo_atual = resposta["saldo"]
-    
 
-    if saldo_atual >= valor:
-        novo_saldo = saldo_atual - valor
+    valor_saque = dados.valor
 
-        atualizar_saldo(nome_usuario, novo_saldo)
+    if valor_saque <= 0:
+        return{"status":"erro", "mensagem": "Valor inserido inválido para saque"}
 
-        return {
+    usuario = resposta["sub"]
+ 
+    saldo_atual = buscar_saldo(usuario)
+
+    if "status" in saldo_atual and saldo_atual["status"] == "erro":
+        return saldo_atual
+
+    if valor_saque > saldo_atual["saldo"]:
+        return{"status":"erro", "mensagem":"O valor de saque deve ser menor ou igual que o saldo da conta."}
+
+    novo_saldo = saldo_atual["saldo"] - valor_saque
+
+    atualizar_saldo(usuario, novo_saldo)
+
+    return {
             "status": "sucesso",
             "mensagem": "Saque realizado com sucesso!",
-            "titular": nome_usuario,
-            "saldo_anterior": saldo_atual,
+            "titular": usuario,
+            "saldo_anterior": saldo_atual["saldo"],
             "novo_saldo": novo_saldo
-        }
-    
-    else:
-        return{"status":"erro", "motivo": "Saldo insuficiente."}
+    }
     
 
 @app.post("/transferir/{nome_usuario}/{senha}/{valor}/{usuario_alvo}")
