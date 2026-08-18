@@ -38,3 +38,15 @@ def atualizar_saldo(nome_usuario:str, novo_saldo:float):
 
     conexao.commit()
     return True
+
+
+def buscar_usuario(nome_usuario: str):
+    cursor.execute("SELECT titular FROM contas WHERE titular = ?", (nome_usuario,))
+    resultado = cursor.fetchone()
+
+    if resultado is None:
+        return{"status":"erro", "mensagem":"Usuário não encontrado."}
+
+    usuario_encontrado = resultado[0]
+
+    return{"status":"sucesso", "mensagem":f"Usuário {usuario_encontrado} consta na tabela"}

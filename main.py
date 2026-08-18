@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from database import inicializar_banco
-from repository import verificar_credenciais, atualizar_saldo, buscar_saldo
+from repository import verificar_credenciais, atualizar_saldo, buscar_saldo, buscar_usuario
 from auth.auth import criar_token, validar_token, extrair_token, oauth2_scheme
 from pydantic import BaseModel
 from fastapi.security import OAuth2PasswordRequestForm
@@ -20,6 +20,11 @@ inicializar_banco()
 
 class ValorRecebido(BaseModel):
     valor: float
+
+class TransferenciaRecebida(BaseModel):
+    destinatario: str
+    valor: float
+
 
 
 
@@ -114,47 +119,53 @@ def sacar(dados: ValorRecebido, token: str = Depends(oauth2_scheme)):
     }
     
 
-@app.post("/transferir/{nome_usuario}/{senha}/{valor}/{usuario_alvo}")
-def transferir(nome_usuario:str, senha:str, valor:float, usuario_alvo:str):
+@app.post("/transferir")
+def transferir(dados: TransferenciaRecebida, token: str = Depends(oauth2_scheme)):
 
-    if valor <= 0:
-        return{"status":"erro", "motivo": "O valor para transferência deve ser maior que zero."}
-    if nome_usuario == usuario_alvo:
-        return{"status":"erro", "motivo": "O remetente não pode ser igual ao destinatário."}
-
-    resposta = verificar_credenciais(nome_usuario, senha)
+    resposta = validar_token(token)
 
     if resposta["status"] == "erro":
         return resposta
     
-    saldo_remetente = resposta["saldo"]
+    remetente = resposta["sub"]
 
-    resposta2 = buscar_saldo(usuario_alvo)
-
-    if resposta2["status"] == "erro" and resposta2["motivo"] == "Usuário não encontrado.":
-        return{"status":"erro", "motivo":"O usuário de destino não foi encontrado."}
+    valor_transferencia = dados.valor
     
-    saldo_destinatario = resposta2["saldo"]
+    if valor_transferencia <= 0:
+        return{"status":"erro", "mensagem":"Valor inserido inválido para transferência"}
+
+    destinatario = dados.destinatario
+
+    if remetente == destinatario:
+        return{"status":"erro", "mensagem":"O Remetente deve ser diferente do Destinatário!"}
+
+    busca_destinatario = buscar_usuario(destinatario)
+
+    if "status" in busca_destinatario and busca_destinatario["status"] == "erro":
+        return busca_destinatario
+
+    buscar_saldo_remetente = buscar_saldo(remetente)
+    saldo_remetente = buscar_saldo_remetente["saldo"]
+
+    if saldo_remetente < valor_transferencia:
+        return{"status":"erro", "mensagem":"Saldo insuficiente para transferência"}
+
+    buscar_saldo_destinatario = buscar_saldo(destinatario)
+    saldo_destinatario = buscar_saldo_destinatario["saldo"]
+
+    novo_saldo_remetente = saldo_remetente - valor_transferencia
+
+    novo_saldo_destinatario = saldo_destinatario + valor_transferencia
+
+    atualizar_saldo(remetente, novo_saldo_remetente)
+    atualizar_saldo(destinatario, novo_saldo_destinatario)
+
+    return{"status":"sucesso", "mensagem":"Transferência realizada com sucesso!"}
 
     
-    if saldo_remetente >= valor:
-        saldo_destinatario += valor
-        novo_saldo_remetente = saldo_remetente - valor
 
-        atualizar_saldo(nome_usuario, novo_saldo_remetente)
-        atualizar_saldo(usuario_alvo, saldo_destinatario)
 
-        return {
-            "status": "sucesso",
-            "mensagem": "Transferência realizada com sucesso!",
-            "remetente": nome_usuario,
-            "destinatário": usuario_alvo,
-            "novo_saldo_remetente": novo_saldo_remetente,
-            "novo_saldo_destinatario": saldo_destinatario
-        }
     
-    else:
-        return{"status":"erro", "motivo":"Saldo insuficiente."}
 
 
 
