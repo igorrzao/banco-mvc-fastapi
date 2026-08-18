@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from database import inicializar_banco
-from repository import verificar_credenciais, atualizar_saldo, buscar_saldo, buscar_usuario
+from repository import verificar_credenciais, atualizar_saldo, buscar_saldo, buscar_usuario, atualizar_saldo_transferencia
 from auth.auth import criar_token, validar_token, extrair_token, oauth2_scheme
 from pydantic import BaseModel
 from fastapi.security import OAuth2PasswordRequestForm
@@ -157,8 +157,12 @@ def transferir(dados: TransferenciaRecebida, token: str = Depends(oauth2_scheme)
 
     novo_saldo_destinatario = saldo_destinatario + valor_transferencia
 
-    atualizar_saldo(remetente, novo_saldo_remetente)
-    atualizar_saldo(destinatario, novo_saldo_destinatario)
+    status_atualizar_saldo = atualizar_saldo_transferencia(remetente, novo_saldo_remetente, destinatario, novo_saldo_destinatario)
+
+    if status_atualizar_saldo["status"] == "erro":
+        return{"Erro ao atualizar saldo durante transferência. A operação foi desfeita"}
+
+
 
     return{"status":"sucesso", "mensagem":"Transferência realizada com sucesso!"}
 

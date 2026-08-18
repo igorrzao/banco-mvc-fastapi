@@ -1,4 +1,5 @@
 from database import cursor, conexao
+import sqlite3
 
 
 def buscar_saldo(nome_usuario:str):
@@ -50,3 +51,27 @@ def buscar_usuario(nome_usuario: str):
     usuario_encontrado = resultado[0]
 
     return{"status":"sucesso", "mensagem":f"Usuário {usuario_encontrado} consta na tabela"}
+
+
+def atualizar_saldo_transferencia(remetente:str, novo_saldo_remetente:float, destinatario:str, novo_saldo_destinatario:float):
+
+    try:
+    
+        cursor.execute("""
+            UPDATE contas
+            SET saldo = ?
+            WHERE titular = ?
+        """, (novo_saldo_remetente, remetente))
+
+        cursor.execute("""
+                UPDATE contas
+                SET saldo = ?
+                WHERE titular = ?
+            """, (novo_saldo_destinatario, destinatario))
+        conexao.commit()
+        return{"status":"sucesso", "mensagem":"Saldo atualizado na tabela com sucesso"}
+
+    except sqlite3.Error as erro:
+        conexao.rollback()
+        print(f"Erro ao atualizar saldos da transferência: {erro}")
+        return{"status":"erro", "mensagem":"Erro ao atualizar saldos da transferência"}
