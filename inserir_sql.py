@@ -1,25 +1,17 @@
 import sqlite3
 
-conexao = sqlite3.connect("meu_banco.db")
+conexao = sqlite3.connect("/app/data/meu_banco.db", check_same_thread=False)
 cursor = conexao.cursor()
 
-
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS contas (
-        titular TEXT,
-        senha TEXT,
-        saldo REAL
-    )
-""")
-conexao.commit()
 
 
 cursor.execute("""
     INSERT INTO contas (titular, senha, saldo)
     VALUES
-        ('Igor', 'naruto', 500.0),
-        ('Naruto', 'sasuke', 500.0),
-        ('Itachi', 'uchiha', 500.0)
+        ('Igor', 'igor', 500.0),
+        ('Ana', 'ana', 500.0),
+        ('Guilherme', 'guilherme', 500.0),
+        ('Admin', 'admin', 1000.0)
 """)
 conexao.commit()
 

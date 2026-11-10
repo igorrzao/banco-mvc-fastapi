@@ -5,20 +5,13 @@ cursor = conexao.cursor()
 
 def inicializar_banco():
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS contas (
-                titular TEXT,
-                senha TEXT,
-                saldo REAL
-            )
-    """)
-    conexao.commit()
-
-    cursor.execute("""
-    INSERT INTO contas (titular, senha, saldo)
-    VALUES
-        ('Admin', '123', 500.0 )
+       CREATE TABLE IF NOT EXISTS contas (
+                 titular TEXT PRIMARY KEY NOT NULL,
+                 senha TEXT NOT NULL,
+                 saldo REAL NOT NULL DEFAULT (0) CHECK (saldo >= 0)
+                 );
     """)
     conexao.commit()
 
     
-    print("Banco de dados incializado com sucesso.")
+    print("Banco de dados inicializado com sucesso.")
