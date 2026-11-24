@@ -6,12 +6,12 @@ cursor = conexao.cursor()
 
 
 cursor.execute("""
-    INSERT INTO contas (titular, senha, saldo)
+    INSERT INTO contas (titular, senha, saldo_centavos)
     VALUES
-        ('Igor', 'igor', 500.0),
-        ('Ana', 'ana', 500.0),
-        ('Guilherme', 'guilherme', 500.0),
-        ('Admin', 'admin', 1000.0)
+        ('Igor', 'igor', 50000),
+        ('Ana', 'ana', 50000),
+        ('Guilherme', 'guilherme', 50000),
+        ('Admin', 'admin', 100000)
 """)
 conexao.commit()
 

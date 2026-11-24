@@ -8,7 +8,7 @@ def inicializar_banco():
        CREATE TABLE IF NOT EXISTS contas (
                  titular TEXT PRIMARY KEY NOT NULL,
                  senha TEXT NOT NULL,
-                 saldo REAL NOT NULL DEFAULT (0) CHECK (saldo >= 0)
+                 saldo_centavos INTEGER NOT NULL DEFAULT (0) CHECK (saldo_centavos >= 0)
                  );
     """)
     conexao.commit()

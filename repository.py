@@ -3,39 +3,39 @@ import sqlite3
 
 
 def buscar_saldo(nome_usuario:str):
-    cursor.execute("SELECT saldo FROM contas WHERE titular = ?", (nome_usuario,))
+    cursor.execute("SELECT saldo_centavos FROM contas WHERE titular = ?", (nome_usuario,))
     resultado = cursor.fetchone()
     
     if resultado is None:
         return {"status":"erro", "motivo": "Usuário não encontrado"}
     
-    return {"saldo": resultado[0]}
+    return {"saldo_centavos": resultado[0]}
 
 
 
 def verificar_credenciais(nome_usuario: str, senha_digitada: str):
-    cursor.execute("SELECT saldo, senha FROM contas WHERE titular = ?", (nome_usuario,))
+    cursor.execute("SELECT senha FROM contas WHERE titular = ?", (nome_usuario,))
     resultado = cursor.fetchone()
     
     if resultado is None:
         return{"status":"erro", "motivo":"Usuário não encontrado."}
     
-    saldo_banco = resultado[0]
-    senha_banco = resultado[1]
+    senha_banco = resultado[0]
+
 
     if senha_digitada == senha_banco:
-        return{"status":"sucesso", "saldo":saldo_banco}
+        return{"status":"sucesso"}
     else:
         return{"status":"erro", "motivo":"Senha incorreta."}
 
 
-def atualizar_saldo(nome_usuario:str, novo_saldo:float):
+def atualizar_saldo(nome_usuario:str, novo_saldo_centavos:int):
     
     cursor.execute("""
         UPDATE contas
-        SET saldo = ?
+        SET saldo_centavos = ?
         WHERE titular = ?
-    """, (novo_saldo, nome_usuario))
+    """, (novo_saldo_centavos, nome_usuario))
 
     conexao.commit()
     return True
@@ -53,19 +53,19 @@ def buscar_usuario(nome_usuario: str):
     return{"status":"sucesso", "mensagem":f"Usuário {usuario_encontrado} consta na tabela"}
 
 
-def atualizar_saldo_transferencia(remetente:str, novo_saldo_remetente:float, destinatario:str, novo_saldo_destinatario:float):
+def atualizar_saldo_transferencia(remetente:str, novo_saldo_remetente:int, destinatario:str, novo_saldo_destinatario:int):
 
     try:
     
         cursor.execute("""
             UPDATE contas
-            SET saldo = ?
+            SET saldo_centavos = ?
             WHERE titular = ?
         """, (novo_saldo_remetente, remetente))
 
         cursor.execute("""
                 UPDATE contas
-                SET saldo = ?
+                SET saldo_centavos = ?
                 WHERE titular = ?
             """, (novo_saldo_destinatario, destinatario))
         conexao.commit()

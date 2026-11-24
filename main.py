@@ -5,6 +5,8 @@ from repository import verificar_credenciais, atualizar_saldo, buscar_saldo, bus
 from auth.auth import criar_token, validar_token, extrair_token, oauth2_scheme
 from pydantic import BaseModel
 from fastapi.security import OAuth2PasswordRequestForm
+from decimal import Decimal
+
 
 app = FastAPI()
 
@@ -26,6 +28,23 @@ class TransferenciaRecebida(BaseModel):
     valor: float
 
 
+def reais_para_centavos(valor_texto:str) -> int:
+
+    if Decimal(valor_texto) <= 0:
+            return{
+                "status":"erro",
+                "motivo":"O valor não pode ser menor que 0."
+            }
+    
+    valor_centavos = Decimal(valor_texto) * Decimal("100")
+    return f"{valor_centavos:.2f}"
+
+
+
+def centavos_para_reais(valor_centavos: int) -> str:
+    valor_reais = Decimal(valor_centavos) / Decimal("100")
+    return f"{valor_reais:.2f}"
+
 
 
 @app.get("/saldo")
@@ -42,10 +61,14 @@ def verificar_saldo(token: str = Depends(oauth2_scheme)):
 
     if "status" in resposta and resposta["status"] == "erro":
         return resposta
+
+    saldo_centavos = resposta["saldo_centavos"]
+    
+    saldo_atual = centavos_para_reais(saldo_centavos)
     
     return {
             "status": "sucesso",
-            "saldo_atual": resposta["saldo"]
+            "saldo_atual": saldo_atual
             }
 
     
